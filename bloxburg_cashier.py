@@ -2,9 +2,7 @@ import pyautogui as pg
 import pydirectinput as pdi
 import time
 import keyboard
-import win32api, win32con
-import cv2 as cv
-from os import getcwd
+from datetime import datetime
 
 class bbimg:
     def __init__(self, pos_tuple=(), prompt_img_path="", prompt_region=()):
@@ -13,74 +11,67 @@ class bbimg:
         self.prompt_region = prompt_region
 
     def locate(self):
-        val = pg.locateCenterOnScreen(self.prompt_img_path, confidence=0.9, grayscale=True, region=self.prompt_region)
-        # print("returning locate value {}".format(val))
+        val = pg.locateOnScreen(self.prompt_img_path, confidence=0.9, grayscale=True, region=self.prompt_region)
         return val
 
     def click(self):
-        # win32api.SetCursorPos(self.pos_tuple)
-        # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-        # time.sleep(0.01)
-        # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-
         pdi.moveTo(self.pos_tuple[0], self.pos_tuple[1])
-        time.sleep(0.05)
+        time.sleep(0.05) # Move twice for good measure - buggy
+        pdi.moveTo(self.pos_tuple[0]+1, self.pos_tuple[1]+1)
         pdi.click()
-        time.sleep(0.05)
 
-def screenshot(region):
+def screenshot(filepath="test.png", region=None):
     pic = pg.screenshot(region=region)
-    pic.save(f"{getcwd()}\\test.png")
+    pic.save(filepath)
 
-def loop_locate(objs):
+def loop_locate(objs, det_timeout=50, debug=False):
     order_open = False
+    no_detections = 0
+
     while keyboard.is_pressed('q') == False:
         if objs["b1"].locate():
-            print("found burger 1!")
+            if debug: print("found burger 1!")
             objs["b1"].click()
             order_open = True
-            time.sleep(0.05)
 
         if objs["b2"].locate():
-            print("found burger 2!")
+            if debug: print("found burger 2!")
             objs["b2"].click()
             order_open = True
-            time.sleep(0.05)
 
         if objs["b3"].locate():
-            print("found burger 3!")
+            if debug: print("found burger 3!")
             objs["b3"].click()
             order_open = True
-            time.sleep(0.05)
 
         if objs["fries"].locate():
-            print("found fries")
+            if debug: print("found fries")
             objs["fries"].click()
             order_open = True
-            time.sleep(0.05)
 
         if objs["soda"].locate():
-            print("found soda")
+            if debug: print("found soda")
             objs["soda"].click()
             order_open = True
-            time.sleep(0.1)
 
         if order_open:
-            time.sleep(0.5)
             objs["done"].click()
-            print("clicked done!")
+            if debug: print("clicked done!")
             order_open = False
-            time.sleep(1)
+            no_detections = 0
 
         else:
-            print("none found")
+            if debug: print("none found")
+            no_detections += 1
+            time.sleep(0.5)
 
-        time.sleep(1)
+        # Take a screenshot if something gets in the way
+        if no_detections >= det_timeout:
+            now = datetime.now().strftime("%H-%M-%S")
+            screenshot(filepath=f"no_detection_{now}.png")
+            exit("Detection timed out!")
 
-def loop_pos():
-    while keyboard.is_pressed('q') == False:
-        print(pg.position())
-        time.sleep(0.5)
+    print("Program Stopped")
 
 def setup_objects(prompt_region):
     objs = {}
