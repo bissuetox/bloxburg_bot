@@ -15,5 +15,7 @@ if __name__ == "__main__":
     if max_val >= threshold:
             print("Good match!")
 
+            cv.rectangle(ex, )
+
     cv.imshow('Result', result)
     cv.waitKey()
