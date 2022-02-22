@@ -1,9 +1,0 @@
-    # Buttons
-    # x 300 - 700
-    # y 430 - 900
-    # angled sideways against registers
-    # zoom in to transparent char, zoom out 4 notches
-
-    # Prompt
-    # x 760 - 1130 - 370 width
-    # y 350 - 480 - 130 height
