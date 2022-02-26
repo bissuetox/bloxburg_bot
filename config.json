@@ -1,0 +1,46 @@
+{
+    "img_folder": "img",
+    "screenshot_folder": "screenshots",
+    "set_key": "alt",
+    "detection_timeout": "50",
+    "debug": "true",
+    "objects": {
+        "b1": {
+            "label": "Burger 1",
+            "type": "button",
+            "action": "detect",
+            "detect_img_path": "img/b1.png"
+        },
+        "b2": {
+            "label": "Burger 2",
+            "type": "button",
+            "action": "detect",
+            "detect_img_path": "img/b2.png"
+        },
+        "b3": {
+            "label": "Burger 3",
+            "type": "button",
+            "action": "detect",
+            "detect_img_path": "img/b3.png"
+        },
+        "f": {
+            "label": "Fries",
+            "type": "button",
+            "action": "detect",
+            "detect_img_path": "img/f.png"
+        },
+        "s": {
+            "label": "Soda",
+            "type": "button",
+            "action": "detect",
+            "detect_img_path": "img/s.png"
+        },
+        "done": {
+            "label": "Done Button",
+            "type": "button",
+            "action": "press",
+            "detect_img_path": ""
+        }
+
+    }
+}
