@@ -4,18 +4,24 @@ import time
 import keyboard
 import os
 import json
+from threading import Thread
 from datetime import datetime
 
 class bbimg:
-    def __init__(self, key=None, pos_tuple=(), prompt_img_path="", prompt_region=(), debug=False):
+    def __init__(self, key=None, action=None, pos_tuple=(), prompt_img_path="", prompt_region=(), debug=False):
         self.key=key
+        self.action=action
         self.pos_tuple = pos_tuple
         self.prompt_img_path = prompt_img_path
         self.prompt_region = prompt_region
-        self.debug = False
+        self.debug = debug
 
-    def locate(self):
+    def locate(self, results, i):
         val = pg.locateOnScreen(self.prompt_img_path, confidence=0.9, grayscale=True, region=self.prompt_region)
+        if val:
+            results[i] = True
+        else:
+            results[i] = False
         return val
 
     def click(self):
@@ -24,12 +30,14 @@ class bbimg:
         time.sleep(0.01) # Move twice for good measure - buggy
         pdi.click()
 
-    def check(self):
+    def check(self, results, i):
         if self.locate():
             print(f"Found {self.key}!")
             self.click()
+            results[i] = True
             return True
         else:
+            results[i] = False
             return False
 
 def screenshot(filename="screenshot", include_date=True, region=None):
@@ -43,26 +51,50 @@ def loop_locate(objs, det_timeout=50):
     no_detections = 0
 
     while keyboard.is_pressed('q') == False:
+        # Get number of detection objects
+        detect_objs = []
         for key, obj in objs.items():
-            if obj.key != "done":
-                order_open = True if obj.check() else order_open
+            if obj.action == "detect":
+                detect_objs.append(obj)
+
+        threads = [None] * len(detect_objs)
+        results = [None] * len(detect_objs)
+        
+        # Start threads
+        for idx, obj in enumerate(detect_objs):
+                threads[idx] = Thread(target=obj.locate, args=(results, idx))
+                threads[idx].start()
+                # print(f"Started thread {idx}")
+        
+        # Join threads
+        for idx, obj in enumerate(detect_objs):
+            threads[idx].join()
+            # print(f"Joined thread {idx}")
+        
+        # Click on threads that found something
+        for idx, obj in enumerate(detect_objs):
+            if results[idx] == True:
+                # print(f"{obj.key} found, clicking")
+                obj.click()
+                time.sleep(0.01)
+                order_open = True
 
         if order_open:
             objs["done"].click()
-            print("clicked done!")
+            # print("clicked done!")
             order_open = False
             no_detections = 0
             time.sleep(1)
 
         else:
-            print("none found")
+            # print("none found")
             no_detections += 1
             time.sleep(0.5)
 
         # Take a screenshot if something gets in the way
         if no_detections == det_timeout:
             screenshot(filename="no_detection")
-            # exit("Detection timed out!")
+            exit("Detection timed out!")
 
 
     print("Program Stopped")
@@ -82,6 +114,7 @@ def setup_objects(config, prompt_region, debug=False):
 
             objs[key] = bbimg(
                             key=key,
+                            action=obj["action"],
                             pos_tuple=pos,
                             prompt_img_path=obj["detect_img_path"],
                             prompt_region=prompt_region,
