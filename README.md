@@ -1,4 +1,4 @@
-# object_clicker
+# bloxburg_bot
 
 Program to automatically detect and click objects - currently tailored towards Welcome to Bloxburg (Roblox Game)
 
