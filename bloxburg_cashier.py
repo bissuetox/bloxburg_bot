@@ -121,36 +121,6 @@ def setup_objects(config, prompt_region, debug=False):
                             debug=debug
                         )
             print(pos)
-        
-
-    # keyboard.wait("alt")
-    # objs["b1"] = bbimg(pg.position(), 'img/b1.png', prompt_region)
-    # print(pg.position())
-
-    # print("Burger 2 - ", end="", flush=True)
-    # keyboard.wait("alt")
-    # objs["b2"] = bbimg(pg.position(), 'img/b2.png', prompt_region)
-    # print(pg.position())
-
-    # print("Burger 3 - ", end="", flush=True)
-    # keyboard.wait("alt")
-    # objs["b3"] = bbimg(pg.position(), 'img/b3.png', prompt_region)
-    # print(pg.position())
-
-    # print("Fries - ", end="", flush=True)
-    # keyboard.wait("alt")
-    # objs["fries"] = bbimg(pg.position(), 'img/f.png', prompt_region)
-    # print(pg.position())
-
-    # print("Soda - ", end="", flush=True)
-    # keyboard.wait("alt")
-    # objs["soda"] = bbimg(pg.position(), 'img/s.png', prompt_region)
-    # print(pg.position())
-
-    # print("Done button - ", end="", flush=True)
-    # keyboard.wait("alt")
-    # objs["done"] = bbimg(pg.position(), '')
-    # print(pg.position())
 
     return objs
 
